@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@M-M-Tech-House/enode-restaurant-client-package": "^0.1.5",
+    "@M-M-Tech-House/enode-restaurant-client-package": "^0.1.7",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
