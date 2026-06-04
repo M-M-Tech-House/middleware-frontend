@@ -32,3 +32,34 @@ messaging.onBackgroundMessage((payload) => {
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
+// Handle notification clicks: focus window and send navigation command to client
+self.addEventListener('notificationclick', (event) => {
+  console.log('[firebase-messaging-sw.js] Notification clicked: ', event.notification.data);
+  event.notification.close();
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Find if there is an active client window open and focus it
+      for (const client of clientList) {
+        if ('focus' in client) {
+          client.focus();
+          // Tell the client to navigate to the Cocina view
+          client.postMessage({ type: 'NAVIGATE', view: 'cocina' });
+          return;
+        }
+      }
+      // If no window is open, open a new one
+      if (clients.openWindow) {
+        return clients.openWindow('/').then((client) => {
+          if (client) {
+            // Wait a bit for react app to mount, then send message (handled gracefully by App.tsx)
+            setTimeout(() => {
+              client.postMessage({ type: 'NAVIGATE', view: 'cocina' });
+            }, 2000);
+          }
+        });
+      }
+    })
+  );
+});
